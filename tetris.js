@@ -323,14 +323,14 @@ function showGameoverText(){
 
 //event handling
 document.addEventListener("keydown", e =>{
-    switch(e.keycode){
+    switch(e.keyCode){
         //오른쪽 키
         case 39:
             moveBlock("left",1);
             break;
         //왼쪽 키
         case 37:
-            moveBlock("right",-1);
+            moveBlock("left",-1);
             break;
         //아래키
         case 40:
@@ -348,7 +348,7 @@ document.addEventListener("keydown", e =>{
         default:
             break;
     } 
-    console.log(e);
+    // console.log(e.keyCode);
 })
 
 restartButton.addEventListener("click",()=>{
