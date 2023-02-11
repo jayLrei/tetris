@@ -3,6 +3,7 @@ const playground = document.querySelector(".playground > ul");
 const gameText = document.querySelector(".game-text")
 const scoreDisplay = document.querySelector(".score")
 const restartButton = document.querySelector(".game-text > button")
+
 //Setting
 const GAME_ROWS = 20;
 const GAME_COLS = 10;
@@ -12,188 +13,109 @@ let score = 0;
 let duration = 500;
 let downInterval;
 let tempMovingitem;
+let isFalling = false;
 
 const BLOCKS = {
     square : [
         [
-            [0,0],
-            [0,1],
-            [1,0],
-            [1,1],
+            [0,0],[0,1],[1,0],[1,1],
         ],
         [
-            [0,0],
-            [0,1],
-            [1,0],
-            [1,1],
+            [0,0],[0,1],[1,0],[1,1],
         ],
         [
-            [0,0],
-            [0,1],
-            [1,0],
-            [1,1],
+            [0,0],[0,1],[1,0],[1,1],
         ],
         [
-            [0,0],
-            [0,1],
-            [1,0],
-            [1,1],
+            [0,0],[0,1],[1,0],[1,1],
         ],
     ],
     bar : [
         [
-            [1,0],
-            [2,0],
-            [3,0],
-            [4,0],
+            [1,0],[2,0],[3,0],[4,0],
         ],
         [
-            [2,-1],
-            [2,0],
-            [2,1],
-            [2,2],
+            [2,-1],[2,0],[2,1],[2,2],
         ],
         [
-            [1,0],
-            [2,0],
-            [3,0],
-            [4,0],
+            [1,0],[2,0],[3,0],[4,0],
         ],
         [
-            [2,-1],
-            [2,0],
-            [2,1],
-            [2,2],
+            [2,-1],[2,0],[2,1],[2,2],
         ],
     ],
     tree : [
         [
-            [1,0],
-            [0,1],
-            [1,1],
-            [2,1],
+            [1,0],[0,1],[1,1],[2,1],
         ],
         [
-            [1,0],
-            [0,1],
-            [1,1],
-            [1,2],
+            [1,0],[0,1],[1,1],[1,2],
         ],
         [
-            [2,1],
-            [0,1],
-            [1,1],
-            [1,2],
+            [2,1],[0,1],[1,1],[1,2],
         ],
         [
-            [2,1],
-            [1,2],
-            [1,2],
-            [1,0],
+            [2,1],[1,2],[1,1],[1,0],
         ],
     ],
     zee : [
         [
-            [0,0],
-            [1,0],
-            [1,1],
-            [2,1],
+            [0,0],[1,0],[1,1],[2,1],
         ],
         [
-            [0,1],
-            [1,0],
-            [1,1],
-            [0,2],
+            [0,1],[1,0],[1,1],[0,2],
         ],
         [
-            [0,1],
-            [1,1],
-            [1,2],
-            [2,2],
+            [0,1],[1,1],[1,2],[2,2],
         ],
         [
-            [2,0],
-            [2,1],
-            [1,1],
-            [1,2],
+            [2,0],[2,1],[1,1],[1,2],
         ],
     ],
     elleft : [
         [
-            [0,0],
-            [0,1],
-            [1,1],
-            [2,1],
+            [0,0],[0,1],[1,1],[2,1],
         ],
         [
-            [1,0],
-            [1,1],
-            [1,2],
-            [0,2],
+            [1,0],[1,1],[1,2],[0,2],
         ],
         [
-            [0,1],
-            [1,1],
-            [2,1],
-            [2,2],
+            [0,1],[1,1],[2,1],[2,2],
         ],
         [
-            [1,0],
-            [2,0],
-            [1,1],
-            [1,2],
+            [1,0],[2,0],[1,1],[1,2],
         ],
     ],
     elright : [
         [
-            [1,0],
-            [2,0],
-            [1,1],
-            [1,2],
+            [1,0],[2,0],[1,1],[1,2],
         ],
         [
-            [0,0],
-            [0,1],
-            [1,1],
-            [2,1],
+            [0,0],[0,1],[1,1],[2,1],
         ],
         [
-            [0,2],
-            [1,0],
-            [1,1],
-            [1,2],
+            [0,2],[1,0],[1,1],[1,2],
         ],
         [
-            [0,1],
-            [1,1],
-            [2,1],
-            [2,2],
+            [0,1],[1,1],[2,1],[2,2],
         ]
     ]
 }
 const movingItem = {
     type:"",
-    direction:1,
+    direction:0,
     top:0,
     left:0,
 };
 
 init()
 
-// var selector = document.querySelector('.tree','.elleft','.elright','.square','.bar','.zee');
-// selector.style.color = "#"+(parseInt(Math.random()*0xffffff)).toString(16);
-
 
 //Function
 function init(){
-    const blockArray = Object.entries(BLOCKS);
-    const randomIndex = Math.floor(Math.random() * blockArray.length)
-    // console.log(randomIndex);
-    blockArray[randomIndex][0]
-
     tempMovingitem = {...movingItem};
 
-    for(let i=0; i<20; i++) {
+    for(let i=0; i<GAME_ROWS; i++) {
         prependNewLine()
     }
 
@@ -203,12 +125,12 @@ function init(){
 function prependNewLine(){
     const li = document.createElement("li");
     const ul = document.createElement("ul");
-    for(let j=0; j<10; j++){
+    for(let j=0; j<GAME_COLS; j++){
         const matrix = document.createElement("li");
         ul.prepend(matrix);
     }
-    li.prepend(ul)
-    playground.prepend(li)
+    li.prepend(ul);
+    playground.prepend(li);
 }
 
 function renderBlocks(moveType=""){
@@ -218,15 +140,12 @@ function renderBlocks(moveType=""){
         moving.classList.remove(type,"moving");
     })
 
-    // console.log(type, direction, top, left);
-
-
     BLOCKS[type][direction].some(block => {
         const x = block[0] + left;
         const y = block[1] + top;
+
         //옆이나 밑으로 벗어날 때 방지
         const target = playground.childNodes[y] ? playground.childNodes[y].childNodes[0].childNodes[x] : null;
-        
         const isAvaliable = checkEmpty(target);
         if(isAvaliable){
             target.classList.add(type,"moving"); 
@@ -241,7 +160,6 @@ function renderBlocks(moveType=""){
                 if(moveType === "top"){
                     seizeBlock();
                 }
-                // renderBlocks();
             }, 0)
             return true;
         }
@@ -259,13 +177,13 @@ function seizeBlock(){
         moving.classList.add("seized");
     })
     checkMatch()
-    generateNewBlock()
+    generateNewBlock();
 }
 function checkMatch(){
     const childNodes = playground.childNodes;
 
     childNodes.forEach(child => {
-        let matched = false;
+        let matched = true;
         child.childNodes[0].childNodes.forEach(li=>{
             if(!li.classList.contains("seized")){
                 matched = false;
@@ -278,25 +196,27 @@ function checkMatch(){
             scoreDisplay.innerHTML = score;
         }
     })
+
     generateNewBlock()
 }
+
 function generateNewBlock(){
 
     clearInterval(downInterval);
     downInterval = setInterval(() => {
         moveBlock('top',1)
-    }, duration);
+    }, duration); 
 
     const blockArray = Object.entries(BLOCKS);
     const randomIndex = Math.floor(Math.random() * blockArray.length)
-
     movingItem.type = blockArray[randomIndex][0];
     movingItem.top = 0;
     movingItem.left = 3;
     movingItem.direction = 0;
     tempMovingitem = {...movingItem};
-    renderBlocks()
+    renderBlocks();
 }
+
 function checkEmpty(target){
     if(!target || target.classList.contains("seized")){
         return false;
@@ -310,6 +230,7 @@ function moveBlock(moveType,amount){
 function changeDirection(){
     const direction = tempMovingitem.direction;
     direction === 3 ? tempMovingitem.direction = 0 : tempMovingitem.direction +=1;
+    renderBlocks();
 }
 function dropBlock(){
     clearInterval(downInterval);
